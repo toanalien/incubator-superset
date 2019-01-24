@@ -89,7 +89,7 @@ class Dashboard extends React.PureComponent {
     super(props);
     this.state = {
       showOmni: false,
-    }
+    };
 
     this.isFirstLoad = true;
     this.actionLog = new ActionLog({
@@ -107,21 +107,6 @@ class Dashboard extends React.PureComponent {
   componentDidMount() {
     Logger.append(LOG_ACTIONS_MOUNT_DASHBOARD);
     document.addEventListener('keydown', this.handleKeydown);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.handleKeydown);
-  }
-
-  handleKeydown(event) {
-    console.log('presing some key....');
-    const controlOrCommand = event.ctrlKey || event.metaKey;
-    if (controlOrCommand) {
-      const isK = event.key === 'k' || event.keyCode === 83;
-      if (isK) {
-        this.setState({ showOmni: !this.state.showOmni })
-      }
-    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -227,9 +212,23 @@ class Dashboard extends React.PureComponent {
     }
   }
 
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeydown);
+  }
+
   // return charts in array
   getAllCharts() {
     return Object.values(this.props.charts);
+  }
+
+  handleKeydown(event) {
+    const controlOrCommand = event.ctrlKey || event.metaKey;
+    if (controlOrCommand) {
+      const isK = event.key === 'k' || event.keyCode === 83;
+      if (isK) {
+        this.setState({ showOmni: !this.state.showOmni });
+      }
+    }
   }
 
   refreshExcept(filterKey) {
