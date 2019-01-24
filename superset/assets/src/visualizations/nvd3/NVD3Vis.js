@@ -260,6 +260,77 @@ function nvd3Vis(element, props) {
     return types.indexOf(vizType) >= 0;
   }
 
+  function buildHierarchyCustomize(rows) {
+    const root = {
+      name: 'total',
+      children: [],
+    };
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const size = Number(row[row.length - 2]);
+	  const m1 = Number(row[row.length - 2]);
+      const m2 = Number(row[row.length - 1]);
+      const levels = row.slice(0, row.length - 2);
+      if (isNaN(m1)) {
+        continue;
+      }
+      let currentNode = root;
+      for (let level = 0; level < levels.length; level++) {
+        const children = currentNode.children || [];
+        const nodeName = levels[level];
+        const isLeafNode = (level >= levels.length - 1) || levels[level + 1] === 0;
+        let childNode;
+        let currChild;
+        if (!isLeafNode) {
+          let foundChild = false;
+          for (let k = 0; k < children.length; k++) {
+            currChild = children[k];
+            if (currChild.name === nodeName && currChild.level === level) {
+              childNode = currChild;
+              foundChild = true;
+              break;
+            }
+          }
+          if (!foundChild) {
+            childNode = {
+              name: nodeName,
+              children: [],
+              level,
+            };
+            children.push(childNode);
+          }
+          currentNode = childNode;
+        } else if (nodeName !== 0) {
+          childNode = {
+            name: nodeName,
+            size,
+			m1,
+            m2,
+          };
+          children.push(childNode);
+        }
+      }
+    }
+    function recurse(node) {
+      if (node.children) {
+        let sums;
+        let m1 = 0;
+        let m2 = 0;
+        for (let i = 0; i < node.children.length; i++) {
+          sums = recurse(node.children[i]);
+          m1 += sums[0];
+          m2 += sums[1];
+        }
+		node.size = m1;
+        node.m1 = m1;
+        node.m2 = m2;
+      }
+      return [node.size, node.m1, node.m2];
+    }
+    recurse(root);
+    return root;
+  }
+
   const drawGraph = function () {
     const d3Element = d3.select(element);
     let svg = d3Element.select('svg');
@@ -373,6 +444,14 @@ function nvd3Vis(element, props) {
         }
         // Pie chart does not need top margin
         chart.margin({ top: 0 });
+        break;
+
+      case 'sunburst_zoom':
+        chart = nv.models.sunburstChart();
+        chart.color(d3.scale.category20c());
+        chart.mode("size");
+        const tree = buildHierarchyCustomize(payload.data);
+        data = [tree];
         break;
 
       case 'column':
@@ -526,14 +605,14 @@ function nvd3Vis(element, props) {
           return `rgba(${r}, ${g}, ${b}, ${alpha})`;
         });
       }
-    } else if (vizType !== 'bullet') {
+    } else if (vizType !== 'bullet' && vizType !== 'sunburst_zoom') {
       const colorFn = getScale(colorScheme);
       chart.color(d => d.color || colorFn(cleanColorInput(d[colorKey])));
     }
 
     if (isVizTypes(['line', 'area']) && useRichTooltip) {
       chart.useInteractiveGuideline(true);
-      if (vizType === 'line') {
+      if ((vizType === 'line' || vizType === 'area' || vizType === 'bar') && fd.rich_tooltip) {
         chart.interactiveLayer.tooltip.contentGenerator(d =>
           generateRichLineTooltipContent(d, xAxisFormatter, yAxisFormatter));
       }
@@ -930,6 +1009,16 @@ function nvd3Vis(element, props) {
     }
 
     wrapTooltip(chart, maxWidth);
+    svg.select('.nv-controlsWrap').on('click', function() {
+    	svg.select('g.nv-barsWrap').selectAll('text').remove();
+    	stacked = chart.stacked();
+    	if (fd.show_bar_value) {
+        setTimeout(function () {
+          svg.select('g.nv-barsWrap').selectAll('text').remove();	
+          addTotalBarValues(svg, chart, data, stacked, fd.y_axis_format);
+        }, animationTime);
+      }
+    });
     return chart;
   };
 

@@ -55,6 +55,7 @@ import PivotTable from './PivotTable';
 import Rose from './Rose';
 import Sankey from './Sankey';
 import Sunburst from './Sunburst';
+import SunburstZoom from './SunburstZoom';
 import Separator from './Separator';
 import Table from './Table';
 import TimePivot from './TimePivot';
@@ -106,6 +107,7 @@ export const controlPanelConfigs = {
   sankey: Sankey,
   separator: Separator,
   sunburst: Sunburst,
+  sunburst_zoom: SunburstZoom,
   table: Table,
   time_pivot: TimePivot,
   time_table: TimeTable,

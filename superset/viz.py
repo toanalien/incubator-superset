@@ -2577,6 +2577,40 @@ class PairedTTestViz(BaseViz):
                 data[key] = [d]
         return data
 
+class SunburstZoomViz(BaseViz):
+
+    """A multi level sunburst chart"""
+
+    viz_type = 'sunburst_zoom'
+    verbose_name = _('Sunburst VanTu')
+    is_timeseries = False
+    credits = (
+        'Kerry Rodden '
+        '@<a href="https://bl.ocks.org/kerryrodden/7090426">bl.ocks.org</a>')
+
+    def get_data(self, df):
+        fd = self.form_data
+        cols = fd.get('groupby')
+        metric = fd.get('metric')
+        secondary_metric = fd.get('secondary_metric')
+        if metric == secondary_metric or secondary_metric is None:
+            df.columns = cols + ['m1']
+            df['m2'] = df['m1']
+        return json.loads(df.to_json(orient='values'))
+
+    def query_obj(self):
+        qry = super(SunburstZoomViz, self).query_obj()
+        fd = self.form_data
+        qry['metrics'] = [fd['metric']]
+        secondary_metric = fd.get('secondary_metric')
+        if secondary_metric and secondary_metric != fd['metric']:
+            qry['metrics'].append(secondary_metric)
+        return qry
+
+		
+class SankeyViz(BaseViz):
+ 
+     """A Sankey diagram that requires a parent-child dataset"""
 
 class RoseViz(NVD3TimeSeriesViz):
 
