@@ -17,6 +17,7 @@
  * under the License.
  */
 import React from 'react';
+import { Modal } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import { t } from '@superset-ui/translation';
 
@@ -39,8 +40,6 @@ import {
   LOG_ACTIONS_LOAD_DASHBOARD_PANE,
   LOG_ACTIONS_FIRST_DASHBOARD_LOAD,
 } from '../../logger';
-
-import { Modal, Alert, Button, Radio } from 'react-bootstrap';
 import OmniContianer from '../../components/OmniContainer';
 
 import '../stylesheets/index.less';
