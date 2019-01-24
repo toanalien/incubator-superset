@@ -234,16 +234,14 @@ class Dashboard extends React.PureComponent {
   }
 
   render() {
-    return (<div style={{display: "flex", flexDirection: "column"}}>
-      <div style={{zValue: 2}}>
-      <Modal show bsStyle="large">
-        <OmniContianer />
-      </Modal>
+    return (
+      <div>
+        <Modal show bsStyle="large">
+          <OmniContianer />
+        </Modal>
+        <DashboardBuilder />
       </div>
-      <div style={{zValue: -2}}>
-      <DashboardBuilder />
-      </div>
-    </div>);
+    );
   }
 }
 
