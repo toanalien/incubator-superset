@@ -40,6 +40,7 @@ import {
   LOG_ACTIONS_FIRST_DASHBOARD_LOAD,
 } from '../../logger';
 
+import { Modal, Alert, Button, Radio } from 'react-bootstrap';
 import OmniContianer from '../../components/OmniContainer';
 
 import '../stylesheets/index.less';
@@ -234,14 +235,16 @@ class Dashboard extends React.PureComponent {
   }
 
   render() {
-    return <div style={{display: "flex"}}>
-      <div>
+    return (<div style={{display: "flex", flexDirection: "column"}}>
+      <div style={{zValue: 2}}>
+      <Modal show bsStyle="large">
+        <OmniContianer />
+      </Modal>
+      </div>
+      <div style={{zValue: -2}}>
       <DashboardBuilder />
       </div>
-      <div style={{ paddingBottom: 500, zValue: -1, backgroundColor: 'black' }}>
-        <OmniContianer />
-      </div>
-    </div>;
+    </div>);
   }
 }
 
