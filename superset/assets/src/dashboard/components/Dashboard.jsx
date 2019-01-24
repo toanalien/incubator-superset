@@ -96,11 +96,23 @@ class Dashboard extends React.PureComponent {
     });
     Logger.start(this.actionLog);
     this.initTs = new Date().getTime();
+
+    this.handleKeydown = this.handleKeydown.bind(this);
   }
 
   componentDidMount() {
     Logger.append(LOG_ACTIONS_MOUNT_DASHBOARD);
+    document.addEventListener('keydown', this.handleKeydown);
   }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeydown);
+  }
+
+  handleKeydown() {
+    console.log('presing some key....')
+  }
+
 
   componentWillReceiveProps(nextProps) {
     if (!nextProps.dashboardState.editMode) {
