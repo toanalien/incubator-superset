@@ -236,7 +236,7 @@ class Dashboard extends React.PureComponent {
   render() {
     return (
       <div>
-        <Modal show bsStyle="large">
+        <Modal show>
           <OmniContianer />
         </Modal>
         <DashboardBuilder />
