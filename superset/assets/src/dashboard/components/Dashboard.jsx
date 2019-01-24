@@ -87,6 +87,10 @@ class Dashboard extends React.PureComponent {
 
   constructor(props) {
     super(props);
+    this.state = {
+      showOmni: false,
+    }
+
     this.isFirstLoad = true;
     this.actionLog = new ActionLog({
       impressionId: props.impressionId,
@@ -109,10 +113,16 @@ class Dashboard extends React.PureComponent {
     document.removeEventListener('keydown', this.handleKeydown);
   }
 
-  handleKeydown() {
-    console.log('presing some key....')
+  handleKeydown(event) {
+    console.log('presing some key....');
+    const controlOrCommand = event.ctrlKey || event.metaKey;
+    if (controlOrCommand) {
+      const isK = event.key === 'k' || event.keyCode === 83;
+      if (isK) {
+        this.setState({ showOmni: !this.state.showOmni })
+      }
+    }
   }
-
 
   componentWillReceiveProps(nextProps) {
     if (!nextProps.dashboardState.editMode) {
@@ -248,7 +258,7 @@ class Dashboard extends React.PureComponent {
   render() {
     return (
       <div>
-        <Modal show>
+        <Modal show={this.state.showOmni}>
           <OmniContianer />
         </Modal>
         <DashboardBuilder />
